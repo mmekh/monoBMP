@@ -1,4 +1,4 @@
-﻿#ifndef HEADER_H
+#ifndef HEADER_H
 #define HEADER_H
 
 //инклюды
@@ -80,8 +80,8 @@ void save(pixelmap_s *pixelmap_1,const char *name)
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//30-33 Метод компрессии
 	tmpUint32 = 0; //Если нет сжатия то 0
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//34-37 Размер пиксельных данных в байтах
-	tmpUint32 = 3780;//96 PPI
-	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//38-41 PPM (пикселей на метр) по горизонтали
+	tmpInt32 = 3780;//96 PPI
+	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//38-41 PPM по горизонтали
 	tmpInt32 = 3780;//96 PPI
 	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//42-45 PPM по вертикали
 	tmpUint32 = 0;
