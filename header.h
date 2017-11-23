@@ -50,7 +50,7 @@ void save(pixelmap_s *pixelmap_1,const char *name)
 {
     FILE *bmp = fopen(name,"wb");
     if (bmp==NULL)
-        return;
+	perror("");
     uint16_t tmpUint16=0;
     uint32_t tmpUint32=0;
     int32_t tmpInt32=0;
@@ -103,8 +103,7 @@ pixelmap_s * load (const char * filename) {
 	/*Открываем файл;*/
 	FILE * bmp = fopen (filename, "rb");
 	if (bmp == NULL)
-		return NULL;
-
+		perror("");
 	uint32_t pixelDataOffset = 0;
 	int32_t imgWidth = 0, imgHeight = 0;
 	uint16_t bitsPerPixel = 0;
