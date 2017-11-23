@@ -80,11 +80,11 @@ void save(pixelmap_s *pixelmap_1,const char *name)
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//30-33 Метод компрессии
 	tmpUint32 = 0; //Если нет сжатия то 0
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//34-37 Размер пиксельных данных в байтах
-	tmpInt32 = 2835;
-	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//38-41 PPM по горизонтали
-	tmpInt32 = 2835;
+	tmpInt32 = 0;
+	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//38-41 PPM (пикселей на метр) по горизонтали
+	tmpInt32 = 3780;//96 PPI
 	fwrite (&tmpInt32, sizeof(int32_t), 1, bmp);//42-45 PPM по вертикали
-	tmpUint32 = 0;
+	tmpUint32 = 3780;//96 PPI
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//46-49 Размер таблицы цветов в ячейках
 	tmpUint32 = 0;
 	fwrite (&tmpUint32, sizeof(uint32_t), 1, bmp);//50-53 Количество ячеек от начала таблицы цветов до последней используемой (включая её саму)
