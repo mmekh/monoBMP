@@ -16,9 +16,10 @@ main(int argc,char * argv[])
     strcat(name,"_mono.bmp");
     ScanFILEHEADER(bmp);
     ScanFILEINFO(bmp);
-    printf("Compression %d\n",fileInfo.biClrUsed);
-    printf("Size %d\n",fileInfo.biSize);
-    printf("Palette\mask size %d\n",(fileHeader.bfOffBits-fileInfo.biSize-14));
+    printf("Bit count: %d\n",fileInfo.biBitCount);
+    printf("Compression:%d\n",fileInfo.biClrUsed);
+    printf("Size: %d\n",fileInfo.biSize);
+    printf("Palette/mask field size: %d\n",(fileHeader.bfOffBits-fileInfo.biSize-14));
     FILE *bmp_new = fopen(name,"wb");
     if (bmp_new==NULL)
         perror("");

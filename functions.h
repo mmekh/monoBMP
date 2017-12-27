@@ -3,7 +3,7 @@
 
 #include "structures.h"
 
-int infoSize,i,a=255*3/2;//25 отвечает за баланс белого-черного
+int infoSize,i,a=255*3/2;
 unsigned int s,p[4];
 
 void PutPixel(int m,int n,FILE *bmp)
@@ -16,8 +16,6 @@ void PutPixel(int m,int n,FILE *bmp)
 }
 void ScanFILEHEADER(FILE *bmp)
 {
-
-    //Если начальный файл не BMP, то не создаем новый файл
     fread(&fileHeader,sizeof(fileHeader),1,bmp);
     if (fileHeader.bfType != 0x4d42)
     {
@@ -28,9 +26,7 @@ void ScanFILEHEADER(FILE *bmp)
 }
 void ScanFILEINFO(FILE *bmp)
 {
-
-    //Начинаем считывать BITMAPINFO
-    fread(&infoSize,sizeof(fileInfo.biSize),1,bmp);//Размер структуры
+    fread(&infoSize,sizeof(fileInfo.biSize),1,bmp);
     fseek(bmp,14,SEEK_SET);
     fread(&fileInfo,infoSize,1,bmp);
 }
@@ -45,7 +41,6 @@ void CreateBitMap(FILE *bmp,FILE *bmp_new)
 {
     if (fileInfo.biBitCount<=8)
     {
-
         for (i=0;i<pow(2,fileInfo.biBitCount)*4;i++)
         {
             p[i%4]=fgetc(bmp);
@@ -68,55 +63,70 @@ void CreateBitMap(FILE *bmp,FILE *bmp_new)
             putc(fgetc(bmp),bmp_new);
         }
     }
-    //still not working
+
     if (fileInfo.biBitCount==16)
     {
-        DWORD pixel,b,g,r;
-        if (fileInfo.biCompression==3&&fileInfo.biSize==40)
+        WORD pixel,palette,b,g,r,a;
+        if (fileInfo.biCompression==3)
         {
-            fread(&mask16,sizeof(char),12,bmp);
-            fwrite(&mask16,sizeof(char),12,bmp_new);
+            mask16.rgbBlue=0x001F;
+            mask16.rgbGreen=0x07E0;
+            mask16.rgbRed=0xF800;
+            if(fileInfo.biSize==40)
+            {
+                fread(&mask16,sizeof(char),12,bmp);
+                fwrite(&mask16,sizeof(char),12,bmp_new);
+            }
+
             for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
             {
                 fread(&pixel,sizeof(pixel),1,bmp);
                 b=mask16.rgbBlue&pixel;
-                g=mask16.rgbGreen&pixel;
-                r=mask16.rgbRed&pixel;
-                s=(mask16.rgbBlue+mask16.rgbGreen/(mask16.rgbBlue+1)+mask16.rgbRed/(mask16.rgbBlue|mask16.rgbGreen+1)+3)/2;
+                g=(mask16.rgbGreen&pixel)/(mask16.rgbBlue+1);
+                r=(mask16.rgbRed&pixel)/(mask16.rgbBlue|mask16.rgbGreen+1);
+                s=(b+g+r)/2;
                 if(b+g+r>s)
                 {
-                    pixel=0xFFFF;
-                    fwrite(&pixel,sizeof(char),2,bmp_new);
+                    PutPixel(255,2,bmp_new);
                 }
                 else
                 {
-                   pixel=0x0000;
-                   fwrite(&pixel,sizeof(char),2,bmp_new);
+                    PutPixel(0,2,bmp_new);
                 }
-            }
-        }
-        else if (fileInfo.biCompression==6&&fileInfo.biSize==40)
-        {
-            fread(&mask16,sizeof(char),16,bmp);
-            fwrite(&mask16,sizeof(char),16,bmp_new);
-            for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
-            {
-                fread(&mask16,sizeof(char),12,bmp);
-                fwrite(&mask16,sizeof(char),12,bmp_new);
-                printf("Masks:\n%x-BLUE",mask16.rgbBlue);
-                printf("\n%x-GREEN",mask16.rgbGreen);
-                printf("\n%x-RED\n",mask16.rgbRed);
             }
         }
         else
         {
+            mask16.rgbAlpha=0x8000;
+            mask16.rgbBlue=0x001F;
+            mask16.rgbGreen=0x03E0;
+            mask16.rgbRed=0x7C00;
+            if(fileInfo.biSize==40&&fileInfo.biCompression==6)
+            {
+                fread(&mask16,sizeof(char),16,bmp);
+                fwrite(&mask16,sizeof(char),16,bmp_new);
+            }
             for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
             {
-
+                fread(&pixel,sizeof(pixel),1,bmp);
+                b=mask16.rgbBlue&pixel;
+                g=(mask16.rgbGreen&pixel)/(mask16.rgbBlue+1);
+                r=(mask16.rgbRed&pixel)/(mask16.rgbBlue|mask16.rgbGreen+1);
+                s=(b+g+r)/2;
+                a=mask16.rgbAlpha&pixel/(mask16.rgbBlue|mask16.rgbGreen|mask16.rgbRed+1);
+                if(b+g+r>s)
+                {
+                    pixel=0x7FFF|a;
+                    fwrite(&pixel,sizeof(pixel),1,bmp_new);
+                }
+                else
+                {
+                    PutPixel(0,2,bmp_new);
+                }
             }
         }
     }
-    //
+
     if (fileInfo.biBitCount==24)
     {
         RGB24 *palette,*pixel;
@@ -135,6 +145,7 @@ void CreateBitMap(FILE *bmp,FILE *bmp_new)
             }
         }
     }
+
     if (fileInfo.biBitCount==32)
     {
         RGB32 *palette,*pixel;
