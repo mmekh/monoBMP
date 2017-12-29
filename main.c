@@ -3,7 +3,7 @@
 main(int argc,char * argv[])
 {
     char name[100];
-    //Читаем и создаем новое имя файла
+    //Г—ГЁГІГ ГҐГ¬ ГЁ Г±Г®Г§Г¤Г ГҐГ¬ Г­Г®ГўГ®ГҐ ГЁГ¬Гї ГґГ Г©Г«Г 
 	if (argv[1]==NULL)
     {
        	printf("Enter file name: ");
@@ -25,6 +25,8 @@ main(int argc,char * argv[])
         perror("");
     CreateHeader(bmp_new);
     CreateBitMap(bmp,bmp_new);
+    fclose(bmp);
+    fclose(bmp_new);
     printf("Done.");
     getc(stdin);
     return 0;
