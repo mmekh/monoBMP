@@ -11,7 +11,7 @@ main()
     if (size==0)
         {
             printf("File is empty.");
-            exit(2);
+            exit(1);
         }
     rewind (input);
     char *string=(char*)calloc(size,sizeof(char));
