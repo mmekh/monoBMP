@@ -2,27 +2,16 @@
 
 main(int argc,char * argv[])
 {
-    char name[100];
-    //×èòàåì è ñîçäàåì íîâîå èìÿ ôàéëà
-	if (argv[1]==NULL)
+    if (argv[1]==NULL || argv[2]==NULL)
     {
-       	printf("Enter file name: ");
-       	gets(name);
+        printf("Not enough arguments");
+        exit(1);
     }
-    else
-        strcpy(name,argv[1]);
-    FILE *bmp = fopen(name,"rb");
-    name[strlen(name)-4]='\0';
-    strcat(name,"_mono.bmp");
+    FILE *bmp,*bmp_new;
+    bmp=BMPname(argv[1],argv[2],"input");
     ScanFILEHEADER(bmp);
+    bmp_new=BMPname(argv[1],argv[2],"output");
     ScanFILEINFO(bmp);
-    printf("Bit count: %d\n",fileInfo.biBitCount);
-    printf("Compression:%d\n",fileInfo.biClrUsed);
-    printf("Size: %d\n",fileInfo.biSize);
-    printf("Palette/mask field size: %d\n",(fileHeader.bfOffBits-fileInfo.biSize-14));
-    FILE *bmp_new = fopen(name,"wb");
-    if (bmp_new==NULL)
-        perror("");
     CreateHeader(bmp_new);
     CreateBitMap(bmp,bmp_new);
     fclose(bmp);

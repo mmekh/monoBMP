@@ -2,16 +2,37 @@
 #define FUNC
 
 #include "structures.h"
+#include "PutPixel.c"
 
 int infoSize,i,a=255*3/2;
 unsigned int s,p[4];
 
-void PutPixel(int m,int n,FILE *bmp)
+
+void Rename(char name[],char q)
 {
-    while(n>0)
+    char* eqSign;
+    eqSign=strchr(name,q);
+
+    memmove(name,eqSign+1,strlen(name) - (eqSign - name) + 1);
+}
+FILE* BMPname(char name1[],char name2[],char io[])
+{
+    FILE *temp;
+    if (strstr(name1,io)!=0)
     {
-        fputc(m,bmp);
-        n--;
+        Rename(name1,'=');
+        FILE *temp = fopen(name1,"rb");
+        if (temp==NULL)
+            perror("");
+        return temp;
+    }
+    else
+    {
+        Rename(name2,'=');
+        FILE *temp = fopen(name2,"wb");
+        if (temp==NULL)
+            perror("");
+        return temp;
     }
 }
 void ScanFILEHEADER(FILE *bmp)
@@ -39,9 +60,34 @@ void CreateHeader(FILE *bmp_new)
 
 void CreateBitMap(FILE *bmp,FILE *bmp_new)
 {
-    if (fileInfo.biBitCount<=8)
+    if (fileInfo.biBitCount==1)
     {
-        for (i=0;i<pow(2,fileInfo.biBitCount)*4;i++)
+        for (i=0;i<2;i++)
+        {
+            p[1]=fgetc(bmp);
+            p[2]=fgetc(bmp);
+            p[3]=fgetc(bmp);
+            p[4]=fgetc(bmp);
+            s=p[1]+p[2]+p[3];
+                if (s>a)
+                {
+                    PutPixel(255,4,bmp_new);
+                }
+                else
+                {
+                    PutPixel(0,4,bmp_new);
+                }
+                s=0;
+            }
+        for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
+        {
+            putc(fgetc(bmp),bmp_new);
+        }
+    }
+
+    if (fileInfo.biBitCount==4)
+    {
+        for (i=0;i<64;i++)
         {
             p[i%4]=fgetc(bmp);
             s+=p[i%4];
@@ -57,6 +103,31 @@ void CreateBitMap(FILE *bmp,FILE *bmp_new)
                 }
                 s=0;
             }
+        }
+        for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
+        {
+            putc(fgetc(bmp),bmp_new);
+        }
+    }
+
+    if (fileInfo.biBitCount==8)
+    {
+        for (i=0;i<256;i++)
+        {
+            p[1]=fgetc(bmp);
+            p[2]=fgetc(bmp);
+            p[3]=fgetc(bmp);
+            p[4]=fgetc(bmp);
+            s=p[1]+p[2]+p[3];
+            if (s>a)
+            {
+                PutPixel(255,4,bmp_new);
+            }
+            else
+            {
+                PutPixel(0,4,bmp_new);
+            }
+            s=0;
         }
         for (i=0;i<fileInfo.biWidth*fileInfo.biHeight;i++)
         {

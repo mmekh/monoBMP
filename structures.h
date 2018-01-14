@@ -9,16 +9,15 @@
 
 #pragma pack(push,1)
 
-typedef uint8_t BYTE;//8 бит без знака
-typedef uint16_t WORD;//16 бит без знака
-typedef uint32_t DWORD;//32 бита без знака
-typedef int32_t LONG;//32 бита со знаком
-typedef int FXPT2DOT30;
+typedef uint8_t BYTE;
+typedef uint16_t WORD;
+typedef uint32_t DWORD;
+typedef int32_t LONG;
 
 typedef struct {
-	FXPT2DOT30 ciexyzX;
-	FXPT2DOT30 ciexyzY;
-	FXPT2DOT30 ciexyzZ;
+	int ciexyzX;
+	int ciexyzY;
+	int ciexyzZ;
 } CIEXYZ;
 
 typedef struct {
