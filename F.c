@@ -26,7 +26,7 @@ main()
     if (output==NULL)
         perror("");
     char c;
-    int i=0,n=0;
+    int n=0;
     while(!feof(input))
     {
         if (c!=','&&c!='\0'&&c!='\n')
